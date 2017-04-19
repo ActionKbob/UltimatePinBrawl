@@ -6,7 +6,9 @@ function _M.createView( o )
   local _w = o.width or display.actualContentWidth
   local _h = o.height or display.actualContentHeight
 
-  local view = display.newContainer( _w, _h )
+  local camera = display.newContainer( _w, _h )
+  local view = display.newGroup()
+  camera:insert( view )
 
   local layers = {}
 
@@ -19,21 +21,36 @@ function _M.createView( o )
     end
   end
 
-  function view.add( obj, l )
+  function camera.add( obj, l )
     local l = l or 4
     obj.cameraLayer = l
-
     if( layers[l] == nil ) then
       layers[l] = display.newGroup()
       view:insert( layers[l] )
       orderLayers()
     end
-
     layers[l]:insert( obj )
-
   end
 
-  return view
+  function camera.moveTo( x, y, params )
+    local params = params or {}
+    local x = -x
+    local y = -y
+    local time = params.time or 500
+    local trans = params.transition or easing.inOutQuad
+    transition.to( view, {
+      x = x, y = y,
+      time = time,
+      transition = trans
+    } )
+  end
+
+  function camera.snapTo( x, y )
+    view.x = -x
+    view.y = -y
+  end
+
+  return camera
 end
 
 return _M

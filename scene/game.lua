@@ -12,7 +12,17 @@ function scene:create( event )
   local camera = cameraView.createView()
   camera:translate( display.contentCenterX, display.contentCenterY )
 
-  
+  local testC = display.newCircle( 0, 0, 30 )
+  physics.addBody( testC, 'dynamic' )
+
+  local testR = display.newRect( 0, 100, 100, 10 )
+  physics.addBody( testR, 'static' )
+
+  camera.add( testC, 2 )
+  camera.add( testR, 5 )
+
+  camera.moveTo( 100, 100 )
+
 end
 
 function scene:show( event )
