@@ -3,6 +3,8 @@ local scene = composer.newScene()
 local physics = require 'physics'
 local cameraView = require 'com.lib.cameraView'
 
+local table = require 'com.pinball.table'
+
 local sceneGroup
 
 function scene:create( event )
@@ -12,17 +14,9 @@ function scene:create( event )
   local camera = cameraView.createView()
   camera:translate( display.contentCenterX, display.contentCenterY )
 
-  local testC = display.newCircle( 0, 0, 30 )
-  physics.addBody( testC, 'dynamic' )
+  local newTable = table.create()
 
-  local testR = display.newRect( 0, 100, 100, 10 )
-  physics.addBody( testR, 'static' )
-
-  camera.add( testC, 2 )
-  camera.add( testR, 5 )
-
-  camera.moveTo( 100, 100 )
-
+  camera.add( newTable )
 end
 
 function scene:show( event )
