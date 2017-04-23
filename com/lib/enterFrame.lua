@@ -4,7 +4,7 @@ local listeners = {}
 
 local function onEnterFrame( event )
   for i = 1, 1, #listeners do
-
+    listeners[i]()
   end
 end
 
