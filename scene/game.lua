@@ -18,7 +18,11 @@ local function onTouch( event )
     if( phase == 'began' or phase == 'moved' ) then leftFlipper.active = true
     else leftFlipper.active = false end
   -- RightFlipper
-  elseif( event.x > display.contentCenterY ) then
+  elseif( event.x > display.contentCenterX ) then
+    if( phase == 'began' or phase == 'moved' ) then
+       rightFlipper.active = true
+       print("right")
+    else rightFlipper.active = false end
   end
 end
 
@@ -38,7 +42,6 @@ function scene:create( event )
   physics.addBody( ball, 'dynamic', { radius = 45, density = 1, bounce = 0.1 } )
   camera.add( ball, 1 )
 
-  --leftFlipper = flipper.create( 'left', 'scene/game/images/flipper.png' )
   leftFlipper = flipper:create( 'left', { imageUrl = 'scene/game/images/flipper.png', x = -130, y = 400 } )
   rightFlipper = flipper:create( 'right', { imageUrl = 'scene/game/images/flipper.png', x = 130, y = 400 } )
 

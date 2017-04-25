@@ -24,7 +24,20 @@ local function loadLeft( flipper, imageOutline )
 end
 
 local function loadRight( flipper, imageOutline )
-  flipper.xScale = oriScale
+  flipper.xScale = -1
+  physics.addBody( flipper, 'dynamic', { density = 3, bounce = 0, friction = 1 } )
+
+  local pivot = display.newCircle( flipper.x + ( flipper.width * 0.5 ) - ( flipper.height * 0.5 ), flipper.y, flipper.height * 0.5 )
+  pivot.isVisible = false
+  physics.addBody( pivot, 'static', { radius = flipper.height * 0.5, isSensor = true } )
+
+  local joint = physics.newJoint( 'pivot', flipper, pivot, pivot.x, pivot.y )
+
+  joint.isLimitEnabled = true
+  joint:setRotationLimits( -20, 30 )
+
+  flipper.upwardForce = -35000
+  flipper.downwardForce = 15000
 end
 
 function _M:create( orientation, o )
@@ -41,11 +54,12 @@ function _M:create( orientation, o )
   elseif( orientation == 'right' ) then loadRight( flipper, imageOutline )
   end
 
-  local function onEnterFrame()
-    if( flipper.active ) then flipper:applyTorque( flipper.upwardForce )
+  function o.onEnterFrame()
+    if( flipper.active ) then
+       flipper:applyTorque( flipper.upwardForce )
     else flipper:applyTorque( flipper.downwardForce ) end
   end
-  enterFrame.addListener( onEnterFrame )
+  enterFrame.addListener( o.onEnterFrame )
 
   return flipper
 end
