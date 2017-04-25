@@ -6,6 +6,7 @@ local flipper = require 'com.pinball.flipper'
 
 --Components
 local leftFlipper
+local rightFlipper
 
 -- Load Globals
 local tableArea = composer.getVariable( 'tableSize' )
@@ -14,7 +15,7 @@ local function onTouch( event )
   local phase = event.phase
   -- leftFlipper
   if( event.x <= display.contentCenterX ) then
-    if( phase == 'began' ) then leftFlipper.active = true
+    if( phase == 'began' or phase == 'moved' ) then leftFlipper.active = true
     else leftFlipper.active = false end
   -- RightFlipper
   elseif( event.x > display.contentCenterY ) then
@@ -24,7 +25,6 @@ end
 function scene:create( event )
   local sceneGroup = self.view
   physics.start()
-  --physics.setGravity( 0, 9.8 )
 
   local displayScale = display.actualContentWidth / tableArea.width
 
@@ -33,18 +33,21 @@ function scene:create( event )
   camera:translate( display.contentCenterX, 0 )
   camera.setDraggable( true )
 
-  local ball = display.newCircle( -130, -100, 45 )
+  local ball = display.newCircle( -100, -100, 45, 45 )
   ball:setFillColor( 1, 0, 0 )
   physics.addBody( ball, 'dynamic', { radius = 45, density = 1, bounce = 0.1 } )
   camera.add( ball, 1 )
 
-  leftFlipper = flipper.new( 'left', 'scene/game/images/flipper.png' )
-  leftFlipper.setPosition( -150, 500 )
+  --leftFlipper = flipper.create( 'left', 'scene/game/images/flipper.png' )
+  leftFlipper = flipper:create( 'left', { imageUrl = 'scene/game/images/flipper.png', x = -130, y = 400 } )
+  rightFlipper = flipper:create( 'right', { imageUrl = 'scene/game/images/flipper.png', x = 130, y = 400 } )
+
   camera.add( leftFlipper )
+  camera.add( rightFlipper )
 
   physics.setDrawMode( 'hybrid' )
 
-  camera.zoom( displayScale )
+  --camera.zoom( displayScale )
 
   Runtime:addEventListener( 'touch', onTouch )
 end

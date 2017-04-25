@@ -10,7 +10,7 @@ function _M.createView( o )
   local camera = display.newContainer( _w, _h )
   local view = display.newGroup()
 
-  camera:insert( display.newRect( 0, 0, camera.width, camera.height ) )
+  -- camera:insert( display.newRect( 0, 0, camera.width, camera.height ) )
   camera:insert( view )
 
   local layers = {}
