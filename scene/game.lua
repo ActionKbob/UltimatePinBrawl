@@ -3,6 +3,7 @@ local scene = composer.newScene()
 local physics = require 'physics'
 local cameraView = require 'com.lib.cameraView'
 local flipper = require 'com.pinball.flipper'
+local map = require 'com.pinball.map'
 
 --Components
 local leftFlipper
@@ -21,7 +22,6 @@ local function onTouch( event )
   elseif( event.x > display.contentCenterX ) then
     if( phase == 'began' or phase == 'moved' ) then
        rightFlipper.active = true
-       print("right")
     else rightFlipper.active = false end
   end
 end
@@ -32,27 +32,29 @@ function scene:create( event )
 
   local displayScale = display.actualContentWidth / tableArea.width
 
-  local camera = cameraView.createView( { width = display.actualContentWidth, height = tableArea.height * displayScale} )
-  camera.anchorY = 0
-  camera:translate( display.contentCenterX, 0 )
-  camera.setDraggable( true )
+  -- local camera = cameraView.createView( { width = display.actualContentWidth, height = tableArea.height * displayScale} )
+  -- camera.anchorY = 0
+  -- camera:translate( display.contentCenterX, 0 )
+  -- camera.setDraggable( true )
 
-  local ball = display.newCircle( -100, -100, 45, 45 )
-  ball:setFillColor( 1, 0, 0 )
-  physics.addBody( ball, 'dynamic', { radius = 45, density = 1, bounce = 0.1 } )
-  camera.add( ball, 1 )
+  -- local ball = display.newCircle( -100, -100, 45, 45 )
+  -- ball:setFillColor( 1, 0, 0 )
+  -- physics.addBody( ball, 'dynamic', { radius = 45, density = 1, bounce = 0.1  } )
+  -- camera.add( ball, 1 )
+  --
+  -- leftFlipper = flipper:create( 'left', { imageUrl = 'scene/game/images/flipper.png', x = -130, y = 400 } )
+  -- rightFlipper = flipper:create( 'right', { imageUrl = 'scene/game/images/flipper.png', x = 130, y = 400 } )
+  --
+  -- camera.add( leftFlipper )
+  -- camera.add( rightFlipper )
 
-  leftFlipper = flipper:create( 'left', { imageUrl = 'scene/game/images/flipper.png', x = -130, y = 400 } )
-  rightFlipper = flipper:create( 'right', { imageUrl = 'scene/game/images/flipper.png', x = 130, y = 400 } )
+  local newMap = map:create()
 
-  camera.add( leftFlipper )
-  camera.add( rightFlipper )
-
-  physics.setDrawMode( 'hybrid' )
+  --physics.setDrawMode( 'hybrid' )
 
   --camera.zoom( displayScale )
 
-  Runtime:addEventListener( 'touch', onTouch )
+  --Runtime:addEventListener( 'touch', onTouch )
 end
 
 function scene:show( event )
