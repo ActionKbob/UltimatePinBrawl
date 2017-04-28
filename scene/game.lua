@@ -49,6 +49,7 @@ function scene:create( event )
   -- camera.add( rightFlipper )
 
   local newMap = map:create()
+  newMap:generate()
 
   --physics.setDrawMode( 'hybrid' )
 
