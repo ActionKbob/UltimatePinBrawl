@@ -1,80 +1,93 @@
 local room = require 'com.pinball.map.room'
 local door = require 'com.pinball.map.door'
 
-local _M = {}
+local Map = {}
 
-_M.__index = _M
+Map.__index = Map
 
-local directions = {
-  N = 0,
-  E = 1,
-  S = 2,
-  W = 3
-}
-
-local function directionPosition( d )
-  if( d == directions.N ) then return { x = 0, y = 1 }
-  elseif( d == directions.E ) then return { x = 1, y = 0 }
-  elseif( d == directions.S ) then return { x = 0, y = -1 }
-  elseif( d == directions.W ) then return { x = -1, y = 0 }
-  end
+function Map:getRoom( x, y )
+  local roomIndex = self.grid[ x * self.maxRooms + y ]
+  return self.rooms[ roomIndex ]
 end
 
-local function adjacentDirection( d )
-  if( d == directions.N ) then return directions.S
-  elseif( d == directions.E ) then return directions.W
-  elseif( d == directions.S ) then return directions.N
-  elseif( d == directions.W ) then return directions.E
-  end
+function Map:setRoom( x, y )
+  print("adding: " .. x .. ":" .. y)
+  table.insert( self.rooms, room:create( x, y ) )
+  self.grid[ x * self.maxRooms + y ] = #self.rooms
+
+  self.rooms[ #self.rooms ].debugDraw()
 end
 
-local testConfs = {}
-testConfs[1] = { 0, 1 }
-testConfs[2] = { 0, 3 }
-testConfs[3] = { 0, 1, 3 }
-
-function _M:create( o )
-  o = o or {}
-  o.seed = o.seed or 0
-  o.maxRooms = o.maxRooms or 13
-
-  local map = {}
-
-  function map:generate()
-    local roomCount = 0
-    local function step ( x, y, fromDir )
-      local newRoom
-      if( x == 0 and y == 0 ) then
-        newRoom = room:create( x, y )
-        newRoom.doors[ directions.N ] = door.conditions.NONE
-        print("launch room")
-      else
-        newRoom = room:create( x, y )
-        local tConf = math.round( math.random(1, 3) )
-        print(tConf)
-        local c = testConfs[ tConf ]
-        for i = 1, #c do
-          newRoom.doors[ c[i] ] = door.conditions.NONE
-        end
-        print("normal room")
-      end
-
-      roomCount = roomCount + 1
-
-      if( roomCount <= o.maxRooms ) then
-        for k, v in pairs( newRoom.doors ) do
-          if( k ~= fromDir ) then
-            local adjDir = adjacentDirection( k )
-            local nextPos = directionPosition( adjDir )
-            step( x + nextPos.x, y + nextPos.y, adjDir )
-          end
-        end
-      end
+function Map:selectOpenRoom()
+  local selected = false
+  while not selected do
+    local rngRoom = math.random( 1, #self.rooms )
+    if not self.rooms[ rngRoom ].surrounded then
+      selected = rngRoom
     end
-    step( 0, 0 )
+  end
+  return selected
+end
+
+function Map:adjacentCoord( roomIndex )
+  local col, row = false, false
+
+  local room = self.rooms[ roomIndex ]
+
+  local forceClose = 0
+  while not col and not row and forceClose < 24 do
+    local rngAdj = math.random( 1, 4 )
+    local x, y
+
+    if( rngAdj == 1 ) then
+      x, y = room.x, room.y - 1
+    elseif( rngAdj == 2 ) then
+      x, y = room.x + 1, room.y
+    elseif( rngAdj == 3 ) then
+      x, y = room.x, room.y + 1
+    elseif( rngAdj == 4 ) then
+      x, y = room.x - 1, room.y
+    end
+
+    if not self.grid[ x * self.maxRooms + y ] then
+      col = x
+      row = y
+    end
+
+    forceClose = forceClose + 1
+  end
+
+  return col, row
+end
+
+function Map:create( o )
+  o = o or {}
+  local map = map or {}
+  setmetatable( map, self )
+
+  map.seed = o.seed or 0
+  map.maxRooms = o.maxRooms or 13
+
+  map.rooms = {}
+  map.grid = {}
+
+  map:setRoom( 0, 0 ) -- Launch Room
+  map:setRoom( 0, -1 ) -- First Real Room
+  map:setRoom( 0, -2 ) -- Second Real Room ( Can be any orientation )
+
+  map:getRoom( 0, 0 ).surrounded = true
+  map:getRoom( 0, -1 ).surrounded = true
+
+  for i = 4, map.maxRooms do
+    local openRoom = map:selectOpenRoom()
+
+    newRoomX, newRoomY = map:adjacentCoord( openRoom )
+
+    map:setRoom( newRoomX, newRoomY )
+
   end
 
   return map
 end
 
-return _M
+return Map
