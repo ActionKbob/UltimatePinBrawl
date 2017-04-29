@@ -1,4 +1,4 @@
-local _M = {
+local Room = {
   type = {
     FIRST = 'room_first',
     NORMAL = 'room_normal',
@@ -6,17 +6,28 @@ local _M = {
   }
 }
 
-function _M:create( x, y )
-  local o = {}
-  o.x, o.y = x, y
-  o.doors = {}
-  self.surrounded = false
+Room.__index = Room
 
-  function o.debugDraw()
-    local testRect = display.newRect( display.contentCenterX + x * 60, display.contentCenterY + y * 60, 45, 45 )
+function Room:debugDraw()
+  local testRect = display.newRect( display.contentCenterX + self.x * 60, display.contentCenterY + self.y * 60, 45, 45 )
+  print(self.surrounded)
+  if( not self.discovered ) then
+    testRect:setFillColor( 0.5, 0.5, 0.5 )
+  else
+    testRect:setFillColor( 1, 1, 1 )
   end
-
-  return o
 end
 
-return _M
+function Room:create( x, y )
+  local room = {}
+  setmetatable( room, self )
+
+  room.x, room.y = x, y
+  room.doors = {}
+  room.surrounded = false
+  room.discovered = false
+
+  return room
+end
+
+return Room

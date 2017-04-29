@@ -8,6 +8,7 @@ local map = require 'com.pinball.map'
 --Components
 local leftFlipper
 local rightFlipper
+local newMap
 
 -- Load Globals
 local tableArea = composer.getVariable( 'tableSize' )
@@ -48,12 +49,11 @@ function scene:create( event )
   -- camera.add( leftFlipper )
   -- camera.add( rightFlipper )
 
-  local newMap = map:create()
+  newMap = map:create()
 
   --physics.setDrawMode( 'hybrid' )
 
   --camera.zoom( displayScale )
-
   --Runtime:addEventListener( 'touch', onTouch )
 end
 
