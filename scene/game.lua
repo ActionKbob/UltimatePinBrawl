@@ -50,9 +50,8 @@ function scene:create( event )
   -- camera.add( rightFlipper )
 
   newMap = map:create()
-
+  
   --physics.setDrawMode( 'hybrid' )
-
   --camera.zoom( displayScale )
   --Runtime:addEventListener( 'touch', onTouch )
 end
