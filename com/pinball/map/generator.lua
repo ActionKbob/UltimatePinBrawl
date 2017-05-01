@@ -143,7 +143,7 @@ end
 
 -- Randomly sets configurations for rooms types
 -- Responsible for placing treasure/shop rooms
-function Generator:finalConfiguration()
+function Generator:finalConfigurations()
   for i = 1, #self.rooms do
     local room = self.rooms[i]
     room.neighbors = self:getNeighbors(i)
@@ -153,8 +153,8 @@ function Generator:finalConfiguration()
       self.maxShops = self.maxShops - 1
     end
 
-    local trRNG = math.random( 1, 13 )
-    if( room.id > self.maxRooms / 2 and self.maxTreasures > 0 and room.type == room.types.NORMAL and trRNG == 10 ) then
+    local trRNG = math.random( 1, 12 )
+    if( room.id > self.maxRooms / 2 and self.maxTreasures > 0 and room.type == room.types.NORMAL and trRNG == 12 ) then
       room.type = room.types.TREASURE
       self.maxTreasures = self.maxTreasures - 1
     end
@@ -177,7 +177,7 @@ function Generator:create( o )
   setmetatable( layout, self )
 
   layout.seed = o.seed or nil
-  layout.maxRooms = o.maxRooms or 10
+  layout.maxRooms = o.maxRooms or 9
   layout.maxShops = o.maxShops or 1
   layout.maxTreasures = o.maxTreasures or 2
 
@@ -195,7 +195,7 @@ function Generator:create( o )
   layout:makeSolutionPath( 0, -1 )
   layout:makeRandomPaths()
 
-  layout:finalConfiguration()
+  layout:finalConfigurations()
 
   return layout
 end
