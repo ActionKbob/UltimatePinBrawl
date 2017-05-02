@@ -21,10 +21,8 @@ function Generator:setRoom( x, y )
   table.insert( self.rooms, rData )
   self.grid[ x * self.maxRooms + y ] = #self.rooms
   self.rooms[ #self.rooms ].id =  #self.rooms
-
   --debug Display
   --display.newRect( display.contentCenterX + (x * 30), display.contentCenterY + (y * 30), 25, 25 )
-
   return self.rooms[ #self.rooms ]
 end
 
