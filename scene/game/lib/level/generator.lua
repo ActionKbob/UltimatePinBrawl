@@ -1,5 +1,3 @@
-local room = require 'com.pinball.map.room'
-
 local Generator = {}
 
 Generator.__index = Generator
@@ -18,10 +16,15 @@ end
 -- (int) x: x position
 -- (int) y: y position
 -- (table) options: additional data to be set as properties
-function Generator:setRoom( x, y, options )
-  table.insert( self.rooms, room:create( x, y, options ) )
+function Generator:setRoom( x, y )
+  local rData = { x = x, y = y, type = 'N', closed = false }
+  table.insert( self.rooms, rData )
   self.grid[ x * self.maxRooms + y ] = #self.rooms
   self.rooms[ #self.rooms ].id =  #self.rooms
+
+  --debug Display
+  --display.newRect( display.contentCenterX + (x * 30), display.contentCenterY + (y * 30), 25, 25 )
+
   return self.rooms[ #self.rooms ]
 end
 
@@ -63,7 +66,7 @@ function Generator:makeSolutionPath( s_x, s_y )
     prevRoom = self:setRoom( nextPos.x, nextPos.y )
     prevRoom.solution = true
     if( i == solutionLength ) then
-      prevRoom.type = room.types.BOSS
+      prevRoom.type = 'B'
       prevRoom.closed = true
     end
   end
@@ -105,24 +108,24 @@ function Generator:getNeighbors( roomIndex )
   local west = self.grid[ (room.x - 1) * self.maxRooms + room.y ]
   local count = 0
 
-  if( room.type ~= room.types.BOSS ) then
+  if( room.type ~= 'B' ) then
     if( north ) then
       neighbors.north = north
       count = count + 1
     end
 
-    if( east and self.rooms[ east ].type ~= room.types.BOSS ) then
+    if( east and self.rooms[ east ].type ~= 'B' ) then
       neighbors.east = east
       count = count + 1
     end
 
-    if( west and self.rooms[ west ].type ~= room.types.BOSS ) then
+    if( west and self.rooms[ west ].type ~= 'B' ) then
       neighbors.west = west
       count = count + 1
     end
   end
 
-  if( south and self.rooms[ south ].type ~= room.types.BOSS ) then
+  if( south and self.rooms[ south ].type ~= 'B' ) then
     neighbors.south = south
     count = count + 1
   end
@@ -147,25 +150,34 @@ function Generator:finalConfigurations()
   for i = 1, #self.rooms do
     local room = self.rooms[i]
     room.neighbors = self:getNeighbors(i)
-    if( self.maxShops > 0 and room.type == room.types.NORMAL and room.neighbors.count == 1 and ( room.neighbors.east or room.neighbors.west ) ) then
-      room.type = room.types.SHOP
+
+    room.orientation = self:getOrientation( room.neighbors )
+
+    if( self.maxShops > 0 and room.type == 'N' and room.neighbors.count == 1 and ( room.neighbors.east or room.neighbors.west ) ) then
+      room.type = 'S'
       room.closed = true
       self.maxShops = self.maxShops - 1
     end
 
     local trRNG = math.random( 1, 12 )
-    if( room.id > self.maxRooms / 2 and self.maxTreasures > 0 and room.type == room.types.NORMAL and trRNG == 12 ) then
-      room.type = room.types.TREASURE
+    if( room.id > self.maxRooms / 2 and self.maxTreasures > 0 and room.type == 'N' and trRNG == 12 ) then
+      room.type = 'T'
       self.maxTreasures = self.maxTreasures - 1
     end
   end
 end
 
--- Draws a visual representation of the layout
-function Generator:debugDraw()
-  for i = 1, #self.rooms do
-    self.rooms[i]:debugDraw();
-  end
+-- Returns the orientation id for it's given neighbors
+-- params
+-- (table) neighbors
+function Generator:getOrientation( neighbors )
+  local orientation = 0
+  if( neighbors.north ) then orientation = orientation + 8 end
+  if( neighbors.east ) then orientation = orientation + 4 end
+  if( neighbors.south ) then orientation = orientation + 2 end
+  if( neighbors.west ) then orientation = orientation + 1 end
+  print(orientation)
+  return orientation
 end
 
 -- Creates the map layout
@@ -175,22 +187,18 @@ function Generator:create( o )
   o = o or {}
   local layout = {}
   setmetatable( layout, self )
-
-  layout.seed = o.seed or nil
   layout.maxRooms = o.maxRooms or 9
   layout.maxShops = o.maxShops or 1
   layout.maxTreasures = o.maxTreasures or 2
 
-  if( layout.seed ) then math.randomseed( layout.seed ) end
-
   layout.rooms = {}
   layout.grid = {}
 
-  local launchRoom = layout:setRoom( 0, 0, { type = room.types.FIRST } ) -- Launch Room
+  local launchRoom = layout:setRoom( 0, 0 ) -- Launch Room
   local firstRoom = layout:setRoom( 0, -1 ) -- First Real Room
 
-  launchRoom.closed, launchRoom.discovered = true
-  firstRoom.closed, firstRoom.discovered = true
+  launchRoom.type = 'L'
+  launchRoom.closed = true
 
   layout:makeSolutionPath( 0, -1 )
   layout:makeRandomPaths()

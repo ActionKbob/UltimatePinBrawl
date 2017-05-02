@@ -29,6 +29,14 @@ function Room:debugDraw()
   end
 end
 
+function Room:onEnter()
+  print( 'Entering Room ' .. self.x .. ':' .. self.y )
+end
+
+function Room:onExit()
+  print( 'Exiting Room ' .. self.x .. ':' .. self.y )
+end
+
 function Room:create( x, y, options )
   local room = {}
   options = options or {}
