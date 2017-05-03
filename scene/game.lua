@@ -5,12 +5,12 @@ local physics = require 'physics'
 -- Libs
 local enterFrame = require 'com.lib.enterFrame'
 local cameraView = require 'com.lib.cameraView'
-local level = require 'scene.game.lib.level'
-local ball = require 'scene.game.lib.ball'
+local levelFactory = require 'scene.game.lib.level'
+local ballFactory = require 'scene.game.lib.ball'
 
 -- Local Components
-local camera
-local inputStage
+local camera, inputStage, level, ball
+
 
 
 function scene:create( event )
@@ -18,6 +18,7 @@ function scene:create( event )
   local params = event.params or {}
 
   physics.start()
+  physics.setDrawMode( 'hybrid' )
 
   local tableArea = { width = 960, height = 1280 }
 
@@ -35,10 +36,9 @@ function scene:create( event )
   sceneGroup:insert( camera )
   sceneGroup:insert( inputStage )
 
-  l = level:create()
-
-  -- TODO:  instantiate level
-  --        add heros from roster
+  level = levelFactory:create( { roomWidth = tableArea.width, roomHeight = tableArea.height } )
+  camera.add( level, 10 )
+  -- TODO:  add heros from roster
 end
 
 function scene:show( event )

@@ -21,8 +21,6 @@ function Generator:setRoom( x, y )
   table.insert( self.rooms, rData )
   self.grid[ x * self.maxRooms + y ] = #self.rooms
   self.rooms[ #self.rooms ].id =  #self.rooms
-  --debug Display
-  --display.newRect( display.contentCenterX + (x * 30), display.contentCenterY + (y * 30), 25, 25 )
   return self.rooms[ #self.rooms ]
 end
 
@@ -157,10 +155,28 @@ function Generator:finalConfigurations()
       self.maxShops = self.maxShops - 1
     end
 
-    local trRNG = math.random( 1, 12 )
-    if( room.id > self.maxRooms / 2 and self.maxTreasures > 0 and room.type == 'N' and trRNG == 12 ) then
+    local trRNG = math.random( 1, 6 )
+    if( room.id > self.maxRooms / 2 and self.maxTreasures > 0 and room.type == 'N' and trRNG == 6 ) then
       room.type = 'T'
       self.maxTreasures = self.maxTreasures - 1
+    end
+
+    local lockRNG = math.random( 1, 2 )
+    if( not room.solution and self.maxLocked > 0 and lockRNG == 2 ) then
+      room.locked = true
+      self.maxLocked = self.maxLocked - 1
+    end
+
+    --debug Display
+    local debugRect = display.newRect( display.contentCenterX + (room.x * 30), display.contentCenterY + (room.y * 30), 25, 25 )
+    if( room.type == 'B' ) then debugRect:setFillColor(1,0,0)
+    elseif( room.type == 'L' ) then debugRect:setFillColor(0,1,0)
+    elseif( room.type == 'T' ) then debugRect:setFillColor(1,1,0)
+    elseif( room.type == 'S' ) then debugRect:setFillColor(1,0,1)
+    end
+    if( room.locked ) then
+      local lr = display.newRect( display.contentCenterX + (room.x * 30), display.contentCenterY + (room.y * 30), 10, 10 )
+      lr:setFillColor( .5, .5, .5 )
     end
   end
 end
@@ -174,7 +190,6 @@ function Generator:getOrientation( neighbors )
   if( neighbors.east ) then orientation = orientation + 4 end
   if( neighbors.south ) then orientation = orientation + 2 end
   if( neighbors.west ) then orientation = orientation + 1 end
-  print(orientation)
   return orientation
 end
 
@@ -188,6 +203,7 @@ function Generator:create( o )
   layout.maxRooms = o.maxRooms or 9
   layout.maxShops = o.maxShops or 1
   layout.maxTreasures = o.maxTreasures or 2
+  layout.maxLocked = o.maxLocked or 2
 
   layout.rooms = {}
   layout.grid = {}
@@ -197,6 +213,8 @@ function Generator:create( o )
 
   launchRoom.type = 'L'
   launchRoom.closed = true
+  launchRoom.solution = true
+  firstRoom.solution = true
 
   layout:makeSolutionPath( 0, -1 )
   layout:makeRandomPaths()
