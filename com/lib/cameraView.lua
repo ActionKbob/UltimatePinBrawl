@@ -1,4 +1,4 @@
-
+local enterFrame = require 'com.lib.enterFrame'
 
 local _M = {}
 
@@ -50,6 +50,16 @@ function _M.createView( o )
 
   function camera.animate(o)
       transition.to( view, o )
+  end
+
+  function camera:setFollowObject( obj )
+    enterFrame.add( self )
+    self.followObject = obj
+  end
+
+  function camera:enterFrame()
+    view.x = -1 * self.followObject.x
+    view.y = -1 * self.followObject.y
   end
 
   function camera.setDraggable( v )

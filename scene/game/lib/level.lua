@@ -53,6 +53,7 @@ function Level:create( o )
       if( px ~= self.currentRoom.x or py ~= self.currentRoom.y ) then
         -- TODO: current room on leave
         self.currentRoom = level.roomObjects[ px * o.maxRooms +py ]
+        self:dispatchEvent( { name = "room_change" } )
       end
     end
   end

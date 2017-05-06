@@ -1,3 +1,4 @@
+local physics = require 'physics'
 local Walls = {}
 
 Walls.__index = Walls
@@ -26,15 +27,19 @@ function Walls:render( room )
   w.west.url = room.neighbors.west and wallAssetUrls.vertiOpen or wallAssetUrls.vertiClosed
 
   w.north.displayObject = display.newImage( room, w.north.url, w.north.x, w.north.y )
+  physics.addBody( w.north.displayObject, 'static', { bounce = 0, density = 10 } )
   w.north.displayObject.anchorY = 0
 
   w.east.displayObject = display.newImage( room, w.east.url, w.east.x, w.east.y )
+  physics.addBody( w.east.displayObject, 'static', { bounce = 0, density = 10 } )
   w.east.displayObject.anchorX = 1
 
   w.south.displayObject = display.newImage( room, w.south.url, w.south.x, w.south.y )
+  physics.addBody( w.south.displayObject, 'static', { bounce = 0, density = 10 } )
   w.south.displayObject.anchorY = 1
 
   w.west.displayObject = display.newImage( room, w.west.url, w.west.x, w.west.y )
+  physics.addBody( w.west.displayObject, 'static', { bounce = 0, density = 10 } )
   w.west.displayObject.anchorX = 0
 
   return w

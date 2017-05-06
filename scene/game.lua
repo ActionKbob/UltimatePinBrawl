@@ -44,9 +44,11 @@ function scene:create( event )
   ball = ballFactory:new()
   camera.add( ball, 1 )
 
-  level.trackObject = ball
-  level.launchRoom:addEventListener( 'launch_fire', launchBall )
+  camera:setFollowObject( ball )
 
+  level.trackObject = ball
+  level:addEventListener( 'room_change', onLevelRoomChange )
+  level.launchRoom:addEventListener( 'launch_fire', launchBall )
   -- TODO:  add heros from roster
 end
 
@@ -82,10 +84,13 @@ function onInputTouch( event )
   if( level ) then level:doInput( event ) end
 end
 
+function onLevelRoomChange( event )
+end
+
 function launchBall( event )
   if( ball ) then
     ball.isAwake = true
-    ball:applyLinearImpulse( 0, -event.charge )
+    ball:applyLinearImpulse( 10, -event.charge )
   end
 end
 
