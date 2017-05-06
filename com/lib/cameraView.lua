@@ -32,7 +32,7 @@ function _M.createView( o )
     elseif( event.phase == 'moved' ) then
         local x = (event.x - event.xStart) + mark.x
         local y = (event.y - event.yStart) + mark.y
-        camera.move( x, y )
+        camera.animate( { x = x, y = y, time = 0 } )
     end
     return true
   end
@@ -48,59 +48,8 @@ function _M.createView( o )
     layers[l]:insert( obj )
   end
 
-  function camera.moveTo( x, y, params )
-    local params = params or {}
-    local x = x
-    local y = y
-    local time = params.time or 500
-    local trans = params.transition or easing.inOutQuad
-    local onComplete = params.onComplete or nil
-    transition.to( view, {
-      x = x, y = y,
-      time = time,
-      transition = trans,
-      onComplete = onComplete
-    } )
-  end
-
-  function camera.move( x, y )
-    view.x = x
-    view.y = y
-  end
-
-  function camera.zoomTo( z, params )
-    local params = params or {}
-    local time = params.time or 500
-    local trans = params.transition or easing.inOutQuad
-    local onComplete = params.onComplete or nil
-    transition.to( view, {
-      xScale = z, yScale = z,
-      time = time,
-      transition = trans,
-      onComplete = onComplete
-    } )
-  end
-
-  function camera.zoom( z )
-    view.xScale = z
-    view.yScale = z
-  end
-
-  function camera.opacityTo( a, params )
-    local params = params or {}
-    local time = params.time or 500
-    local trans = params.transition or easing.inOutQuad
-    local onComplete = params.onComplete or nil
-    transition.to( view, {
-      alpha = a,
-      time = time,
-      transition = trans,
-      onComplete = onComplete
-    } )
-  end
-
-  function camera.opacity( a )
-    view.alpha = a
+  function camera.animate(o)
+      transition.to( view, o )
   end
 
   function camera.setDraggable( v )

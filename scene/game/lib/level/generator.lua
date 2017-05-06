@@ -168,16 +168,16 @@ function Generator:finalConfigurations()
     end
 
     --debug Display
-    local debugRect = display.newRect( display.contentCenterX + (room.x * 30), display.contentCenterY + (room.y * 30), 25, 25 )
-    if( room.type == 'B' ) then debugRect:setFillColor(1,0,0)
-    elseif( room.type == 'L' ) then debugRect:setFillColor(0,1,0)
-    elseif( room.type == 'T' ) then debugRect:setFillColor(1,1,0)
-    elseif( room.type == 'S' ) then debugRect:setFillColor(1,0,1)
-    end
-    if( room.locked ) then
-      local lr = display.newRect( display.contentCenterX + (room.x * 30), display.contentCenterY + (room.y * 30), 10, 10 )
-      lr:setFillColor( .5, .5, .5 )
-    end
+    -- local debugRect = display.newRect( display.contentCenterX + (room.x * 30), display.contentCenterY + (room.y * 30), 25, 25 )
+    -- if( room.type == 'B' ) then debugRect:setFillColor(1,0,0)
+    -- elseif( room.type == 'L' ) then debugRect:setFillColor(0,1,0)
+    -- elseif( room.type == 'T' ) then debugRect:setFillColor(1,1,0)
+    -- elseif( room.type == 'S' ) then debugRect:setFillColor(1,0,1)
+    -- end
+    -- if( room.locked ) then
+    --   local lr = display.newRect( display.contentCenterX + (room.x * 30), display.contentCenterY + (room.y * 30), 10, 10 )
+    --   lr:setFillColor( .5, .5, .5 )
+    -- end
   end
 end
 
